@@ -1,0 +1,4 @@
+# Python Dependencies
+fastapi
+uvicorn
+redis
