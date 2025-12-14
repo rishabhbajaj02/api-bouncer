@@ -2,7 +2,46 @@
 version: '3.8'
 
 services:
+  # Redis service for rate limiting state
   redis:
-    image: redis:alpine
+    image: redis:7-alpine
+    container_name: api-bouncer-redis
     ports:
       - "6379:6379"
+    volumes:
+      # Optional: persist Redis data
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - api-bouncer-network
+  # Optional: Run the API in Docker
+  # Uncomment to run the full stack in containers
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: api-bouncer-api
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - REDIS_HOST=redis
+  #     - REDIS_PORT=6379
+  #     - RATE_LIMIT_ALGORITHM=sliding_window
+  #   depends_on:
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - api-bouncer-network
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  api-bouncer-network:
+    driver: bridge

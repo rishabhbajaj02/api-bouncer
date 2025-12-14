@@ -1,4 +1,11 @@
 # Python Dependencies
-fastapi
-uvicorn
-redis
+# Core Framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# Redis Client (async support)
+redis>=5.0.0
+
+# Optional: For production deployments
+# gunicorn>=21.2.0
+# python-dotenv>=1.0.0
